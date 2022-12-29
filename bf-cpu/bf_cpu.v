@@ -22,24 +22,29 @@ instructions:
 //-- Fichero con la rom
 parameter ROMFILE = "bf_program.list";
 
+parameter ROM_ADDR_WIDTH = 16;
+parameter ROM_DATA_WIDTH = 8;
+parameter RAM_ADDR_WIDTH = 16;
+parameter RAM_DATA_WIDTH = 8;
+
 module bf_alu(
     input clk_in,
-    input [7:0] instr, //instruction
-    input [7:0] read_mem, //data read from memory
+    input [ROM_DATA_WIDTH-1:0] instr, //instruction
+    input [RAM_DATA_WIDTH-1:0] read_mem, //data read from memory
 
-    output [7:0] write_mem, //data to write in memory
-    output [7:0] addr_mem, //address to read or write
+    output [RAM_DATA_WIDTH-1:0] write_mem, //data to write in memory
+    output [RAM_ADDR_WIDTH-1:0] addr_mem, //address to read or write
     output rw_mem, //read(1) or write(0)
-    output [7:0] pc, //program counter
+    output [ROM_ADDR_WIDTH-1:0] pc, //program counter
     );
 
     wire [1:0] opcode = instr[7:6];
     wire [5:0] args = instr[5:0];
 
     wire [7:0] change_pc;
-    reg [7:0] pc;
+    reg [ROM_ADDR_WIDTH-1:0] pc;
     wire [7:0] change_pointer;
-    reg [7:0] pointer;
+    reg [RAM_ADDR_WIDTH-1:0] pointer;
 
     always @(posedge clk_in) begin
         pc <= pc + change_pc;
@@ -102,7 +107,7 @@ endmodule
 
 
 
-module brainfuck(input clk_in, input [1:0] push, output [7:0] led);
+module bf_cpu(input clk_in, input [1:0] push, output [7:0] led);
     //GENERATE SLOW CLOCK
     wire slow_clk;
     prescaler #(.N(23))
@@ -111,15 +116,15 @@ module brainfuck(input clk_in, input [1:0] push, output [7:0] led);
         .clk_out(slow_clk)
     );//generate slow clock, 12MHz to 1Hz
 
-    wire [4:0] rom_addr;
-    wire [7:0] rom_out;
+    wire [ROM_ADDR_WIDTH-1:0] rom_addr;
+    wire [ROM_DATA_WIDTH-1:0] rom_out;
 
-    wire [7:0] ram_in;
-    wire [7:0] ram_addr;
+    wire [RAM_DATA_WIDTH-1:0] ram_in;
+    wire [RAM_ADDR_WIDTH-1:0] ram_addr;
     wire ram_rw;
-    wire [7:0] ram_out;
+    wire [RAM_DATA_WIDTH-1:0] ram_out;
 
-    genram #(.ROMFILE(ROMFILE),.AW(5),.DW(8)) INSTR_ROM (
+    genram #(.ROMFILE(ROMFILE),.AW(ROM_ADDR_WIDTH),.DW(ROM_DATA_WIDTH)) INSTR_ROM (
         .clk(slow_clk),
         .addr(rom_addr),
         .data_in(0),
@@ -128,7 +133,7 @@ module brainfuck(input clk_in, input [1:0] push, output [7:0] led);
         .data_out(rom_out)
     );
     
-    genram #(.AW(5),.DW(8)) DATA_RAM (
+    genram #(.AW(RAM_ADDR_WIDTH),.DW(RAM_DATA_WIDTH)) DATA_RAM (
         .clk(slow_clk),
         .addr(ram_addr),
         .data_in(ram_in),

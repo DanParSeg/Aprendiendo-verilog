@@ -2,7 +2,7 @@
 #-- Establecer nombre del componente
 #----------------------------------------
 #NAME = alu_main
-NAME = brainfuck
+NAME = bf_cpu
 DEPS = dependencies/genram.v dependencies/prescaler.v
 
 
