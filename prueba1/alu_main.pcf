@@ -1,0 +1,12 @@
+set_io clk_in 49
+set_io op[0] 33
+set_io op[1] 34
+
+set_io data[0] 37
+set_io data[1] 38
+set_io data[2] 39
+set_io data[3] 41
+set_io data[4] 42
+set_io data[5] 43
+set_io data[6] 44
+set_io data[7] 45
