@@ -1,0 +1,14 @@
+set_io clk_in 49
+
+set_io spi_out[0] 4 //clock
+set_io spi_out[1] 2 //data
+set_io spi_out[2] 1 //cs
+
+set_io led[0] 37
+set_io led[1] 38
+set_io led[2] 39
+set_io led[3] 41
+set_io led[4] 42
+set_io led[5] 43
+set_io led[6] 44
+set_io led[7] 45
